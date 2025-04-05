@@ -39,9 +39,7 @@ const Learn = () => {
     <div style={styles.appContainer}>
        <nav className="asl-navbar">
         <div className="asl-container">
-          <Link to="/" className="asl-logo">
-           GestureGenius
-          </Link>
+          <Link to="/" className="asl-logo">HandTalk</Link>
           <ul className="asl-nav-links">
             <li><Link to="/">Home</Link></li>
             <li><Link to="/self-testing">Self Testing</Link></li>
@@ -100,7 +98,7 @@ const Learn = () => {
       </main>
 
       <footer style={styles.footer}>
-        <p style={styles.footerText}>&copy; 2024 ASL Detector. All rights reserved.</p>
+        <p style={styles.footerText}>&copy; 2024 HandTalk. All rights reserved.</p>
       </footer>
     </div>
   );

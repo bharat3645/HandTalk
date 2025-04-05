@@ -2,16 +2,13 @@ import React from 'react';
 import { Link } from "react-router-dom"
 import { Camera, Video, BrainCircuit, Users, BookOpen, Heart, Github, Twitter, Linkedin } from 'lucide-react'
 import "./home.css"
-import team from "./team.jpg"
 import hero from "./hero.jpg"
 const HomePage = () => {
   return (
     <div className="homepage">
      <nav className="asl-navbar">
   <div className="asl-container">
-    <Link to="/" className="asl-logo">
-     GestureGenius
-    </Link>
+    <Link to="/" className="asl-logo">HandTalk</Link>
     <ul className="asl-nav-links">
       <li><Link to="/">Home</Link></li>
       <li><Link to="/self-testing">Self Testing</Link></li>
@@ -123,11 +120,23 @@ const HomePage = () => {
           </div>
           <div className="about-content">
             <div className="about-text">
-              <p>
-                At ASL Detector, we're passionate about making communication accessible to everyone. Our team of
-                developers, researchers, and accessibility advocates work together to create innovative solutions for
-                the deaf and hard-of-hearing community.
-              </p>
+              <div className="mission-vision-container">
+                <div className="mission-box">
+                  <h3>Our Mission</h3>
+                  <p>
+                    At HandTalk, we're passionate about making communication accessible to everyone. Our team of
+                    developers, researchers, and accessibility advocates work together to create innovative solutions for
+                    the deaf and hard-of-hearing community.
+                  </p>
+                </div>
+                <div className="vision-box">
+                  <h3>Our Vision</h3>
+                  <p>
+                    We envision a world where communication barriers are eliminated through technology, enabling seamless
+                    interaction between hearing and non-hearing individuals in all aspects of life.
+                  </p>
+                </div>
+              </div>
               <div className="about-values">
                 <div className="value-item">
                   <Users className="value-icon" />
@@ -143,9 +152,6 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-            <div className="about-image">
-              <img src={team} alt="Our Team" className='team' />
-            </div>
           </div>
         </div>
       </section>
@@ -160,7 +166,7 @@ const HomePage = () => {
             <div className="testimonial-card">
               <div className="testimonial-content">
                 <p>
-                  "ASL Detector has transformed how I communicate at work. It's incredibly accurate and easy to use."
+                  "HandTalk has transformed how I communicate at work. It's incredibly accurate and easy to use."
                 </p>
                 <div className="testimonial-author">
                   <div>
@@ -207,16 +213,16 @@ const HomePage = () => {
         <div className="container">
           <div className="footer-content">
             <div className="footer-section">
-              <h3>🤟 GestureGenius</h3>
+              <h3>🤟 HandTalk</h3>
               <p>Breaking communication barriers with technology</p>
               <div className="social-links">
-                <a href="#" aria-label="Github">
+                <a href="https://github.com/HandTalk" target="_blank" rel="noopener noreferrer" aria-label="Github">
                   <Github />
                 </a>
-                <a href="#" aria-label="Twitter">
+                <a href="https://twitter.com/HandTalk" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
                   <Twitter />
                 </a>
-                <a href="#" aria-label="LinkedIn">
+                <a href="https://linkedin.com/company/handtalk" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                   <Linkedin />
                 </a>
               </div>
@@ -258,13 +264,14 @@ const HomePage = () => {
             <div className="footer-section">
               <h4>Contact Us</h4>
               <ul>
-                <li>📞 +91 7046996816</li>
-                <li>📍 402 Aster Nadiad</li>
+                <li>📧 contact@handtalk.com</li>
+                <li>📞 +1 (555) 123-4567</li>
+                <li>📍 123 Innovation Drive, Tech Valley, CA 94043</li>
               </ul>
             </div>
           </div>
           <div className="footer-bottom">
-            <p>&copy; {new Date().getFullYear()} ASL Detector. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} HandTalk. All rights reserved.</p>
             
           </div>
         </div>

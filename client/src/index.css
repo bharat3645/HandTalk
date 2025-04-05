@@ -334,6 +334,7 @@ code {
     font-weight: bold;
     color: #ffffff;
     text-decoration: none;
+    display: inline-block;
   }
   
   .asl-nav-links {
@@ -354,6 +355,7 @@ code {
     font-size: 16px;
     font-weight: 500;
     transition: color 0.3s ease-in-out;
+    display: inline-block;
   }
   
   .asl-nav-links a:hover {
