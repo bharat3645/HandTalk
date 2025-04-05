@@ -94,12 +94,4 @@ Our model was trained using the **MobileNet** architecture, which is optimized f
 ## Demonstration
 Check out our demo video on YouTube: [HandTalk Demo](https://youtu.be/RaSgkDoy-VQ)
 
-## Team Members
-- Yash Gabani
-- Meet Thakkar
-- Vaibhav Dhanani
-- Mayank Meghhani
-
----
-We built **HandTalk** for **DUHacks 4.0**, aiming to bridge communication gaps for ASL users in virtual meetings. 🚀
 
