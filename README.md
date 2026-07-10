@@ -9,9 +9,9 @@ HandTalk is a real-time American Sign Language (ASL) detection system integrated
 - **Self-Testing & ASL Learning:** Users can practice and learn ASL through an interactive section on our website.
 
 ## Technologies Used
-- **Frontend:** [React](w)
-- **Backend:** [Node.js](w), WebRTC for video communication , Mediapipe for Hand detection
-- **Machine Learning:** [Python](w), [OpenCV](w) for model prediction
+- **Frontend:** [React](https://react.dev)
+- **Backend:** [Node.js](https://nodejs.org), WebRTC for video communication , Mediapipe for Hand detection
+- **Machine Learning:** [Python](https://www.python.org), [OpenCV](https://opencv.org) for model prediction
 - **Signaling Protocol:** WebSockets
 - **Model Training:** Custom model trained using MobileNet architecture
   
@@ -23,7 +23,7 @@ HandTalk is a real-time American Sign Language (ASL) detection system integrated
 We have implemented several APIs in our Python backend:
 
 - **`/video_feed`** - Provides video frames for ASL prediction.
-- **`/process`** - Uses [MediaPipe](w) to detect hands and extract hand frames for analysis.
+- **`/process`** - Uses [MediaPipe](https://github.com/google-ai-edge/mediapipe) to detect hands and extract hand frames for analysis.
 - **`/prediction`** - Receives hand frames, predicts the ASL label, and transmits it via WebSockets to the recipient.
 
 ## Project Structure
@@ -43,8 +43,8 @@ Follow these steps to set up and run the project:
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/Yashgabani845/GestureGenius.git
-cd GestureGenius
+git clone https://github.com/bharat3645/HandTalk.git
+cd HandTalk
 ```
 
 ### 2. Set up the Client (React Frontend)
@@ -84,14 +84,11 @@ Our model was trained using the **MobileNet** architecture, which is optimized f
 
 ## Screenshots
 ### 1. Real-time Communication Screenshot
-![Real-time ASL Communication![Screenshot (55)](https://github.com/user-attachments/assets/2f93e49c-d409-4cb3-b5bc-fc14df7d7f2b)
-
+![Real-time ASL Communication](https://github.com/user-attachments/assets/2f93e49c-d409-4cb3-b5bc-fc14df7d7f2b)
 
 ### 2. Self-Testing & Learning Screenshot
-![Self-Testing & Learning]![Screenshot (60)](https://github.com/user-attachments/assets/fbaa89aa-12ee-4ce8-b5bd-e94f89c7181e)
+![Self-Testing & Learning](https://github.com/user-attachments/assets/fbaa89aa-12ee-4ce8-b5bd-e94f89c7181e)
 
 
 ## Demonstration
 Check out our demo video on YouTube: [HandTalk Demo](https://youtu.be/RaSgkDoy-VQ)
-
-
