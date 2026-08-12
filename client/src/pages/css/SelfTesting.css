@@ -125,6 +125,148 @@ body {
   color: #bbb;
 }
 
+/* Confidence + hold-to-commit indicator */
+.confidence-row {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.confidence-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.hold-track {
+  width: 220px;
+  max-width: 80%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.hold-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  transition: width 0.1s linear;
+}
+
+.hint-text {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Spelled sentence builder */
+.sentence-box {
+  background: var(--background-white);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-top: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sentence-box h2 {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.sentence-text {
+  min-height: 2.6rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.5rem;
+  background: var(--background-light);
+  border: 2px dashed var(--primary-color);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+  word-break: break-word;
+  text-align: left;
+}
+
+.sentence-placeholder {
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: normal;
+}
+
+.sentence-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  animation: sentence-blink 1s step-end infinite;
+  color: var(--primary-color);
+}
+
+@keyframes sentence-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.sentence-controls {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.sentence-btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--background-light);
+  color: var(--text-primary);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sentence-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.sentence-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sentence-btn.primary {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.sentence-btn.danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.autospeak-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.autospeak-toggle input {
+  cursor: pointer;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .asl-container {

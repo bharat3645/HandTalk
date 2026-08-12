@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -6,6 +7,15 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 const emailToSocketMap = new Map();
+const startTime = Date.now();
+
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    registeredUsers: emailToSocketMap.size,
+    uptimeSeconds: Math.round((Date.now() - startTime) / 1000),
+  });
+});
 
 const server = http.createServer(app);
 const io = new Server(server, {

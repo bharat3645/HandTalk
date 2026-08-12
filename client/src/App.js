@@ -14,7 +14,7 @@ function App() {
         <Route path="/video-calling" element={<VideoCall />} />
         <Route path="/self-testing" element={<ASLDetector />} />
         <Route path="/learn" element={<Learn />} />
-        <Route path="/Explore" element={<ModelPage />} />
+        <Route path="/explore" element={<ModelPage />} />
         <Route path="/temp" element={<VideoChat />} />
 
       </Routes>

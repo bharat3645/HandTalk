@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Navbar from './Navbar.jsx';
 
 const signs = [
   { id: 1, name: "A", image: "/sign/A.webp" },
@@ -11,7 +12,7 @@ const signs = [
   { id: 7, name: "G", image: "/sign/G.webp" },
   { id: 8, name: "H", image: "/sign/H.webp" },
   { id: 9, name: "I", image: "/sign/I.webp" },
-  { id: 10, name: "J", image: "/sign/J.webp" },
+  { id: 10, name: "J", image: "/sign/J.jpg" },
   { id: 11, name: "K", image: "/sign/K.webp" },
   { id: 12, name: "L", image: "/sign/L.webp" },
   { id: 13, name: "M", image: "/sign/M.webp" },
@@ -37,19 +38,8 @@ const Learn = () => {
 
   return (
     <div style={styles.appContainer}>
-       <nav className="asl-navbar">
-        <div className="asl-container">
-          <Link to="/" className="asl-logo">HandTalk</Link>
-          <ul className="asl-nav-links">
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/self-testing">Self Testing</Link></li>
-            <li><Link to="/video-calling">Video Calling</Link></li>
-            <li><Link to="/learn">Learn ASL</Link></li>
-            <li><Link to="/explore">Explore Model</Link></li>
-          </ul>
-        </div>
-      </nav>
-      
+      <Navbar />
+
       <main style={styles.main}>
         <h1 style={styles.title}>Learn ASL Alphabet</h1>
 

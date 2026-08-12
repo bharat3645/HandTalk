@@ -1,7 +1,17 @@
 {
-  "name": "client",
+  "name": "handtalk-client",
   "version": "0.1.0",
   "private": true,
+  "description": "React frontend for HandTalk -- real-time ASL detection for video calls, self-testing, and learning.",
+  "author": "bharat3645",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bharat3645/HandTalk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bharat3645/HandTalk/issues"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",

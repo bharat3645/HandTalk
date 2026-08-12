@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import { FaPhone, FaPhoneSlash, FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
 import "./css/VideoCall.css";
+import Navbar from "./Navbar.jsx";
+
+const SIGNALING_SERVER_URL = process.env.REACT_APP_SIGNALING_SERVER_URL || 'http://localhost:3001';
+const PREDICTION_API_URL = process.env.REACT_APP_PREDICTION_API_URL || 'http://localhost:5000';
 
 const VideoCall = () => {
   const [blinkEffect, setBlinkEffect] = useState(false);
@@ -71,7 +74,7 @@ const getPrediction = async () => {
       console.log('Image captured successfully');
 
       console.log('Sending prediction request to server');
-      const response = await fetch('http://localhost:5000/predict', {
+      const response = await fetch(`${PREDICTION_API_URL}/predict`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image: imageData })
@@ -135,7 +138,7 @@ const startASLDetection = () => {
   };
 
   useEffect(() => {
-    socketRef.current = io('http://localhost:3001', {
+    socketRef.current = io(SIGNALING_SERVER_URL, {
       transports: ['websocket'],
       forceNew: false,
     });
@@ -199,7 +202,9 @@ const startASLDetection = () => {
       cleanupCall();
       socketRef.current?.disconnect();
     };
-    
+    // Runs once on mount to establish the socket connection; cleanupCall
+    // and email are read from the latest closure when the effect tears down.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -421,18 +426,7 @@ if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
     };
     return (
       <div className="app-container">
-       <nav className="asl-navbar">
-        <div className="asl-container">
-          <Link to="/" className="asl-logo">HandTalk</Link>
-          <ul className="asl-nav-links">
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/self-testing">Self Testing</Link></li>
-            <li><Link to="/video-calling">Video Calling</Link></li>
-            <li><Link to="/learn">Learn ASL</Link></li>
-            <li><Link to="/explore">Explore Model</Link></li>
-          </ul>
-        </div>
-      </nav>
+        <Navbar />
 
         <div className="main-container">
           {!isRegistered ? (
@@ -509,7 +503,7 @@ if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
                     className="video-element"
                   />
                   {remotePrediction.class && (
-                    <div className="prediction-badge remote">
+                    <div className={`prediction-badge remote${blinkEffect ? ' blink' : ''}`}>
                       <p>Partner: {remotePrediction.class} ({(remotePrediction.confidence * 100).toFixed(2)}%)</p>
                     </div>
                   )}

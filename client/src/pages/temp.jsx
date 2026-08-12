@@ -1,12 +1,23 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
+const FASTAPI_WS_URL = process.env.REACT_APP_FASTAPI_WS_URL || 'ws://localhost:8000';
+
+// Module-level constants: defined once instead of being recreated (and
+// re-triggering hook dependency checks) on every render.
+const FRAME_SKIP = 2; // Process every 3rd frame
+const VIDEO_CONSTRAINTS = {
+  width: { ideal: 640 },
+  height: { ideal: 480 },
+  frameRate: { ideal: 15 }
+};
+
 const VideoChat = () => {
   const [localStream, setLocalStream] = useState(null);
   const [peerId, setPeerId] = useState('');
   const [localPeerId] = useState(`user-${Math.random().toString(36).substr(2, 9)}`);
   const [prediction, setPrediction] = useState({ class: '', confidence: 0 });
   const [isProcessingFrame, setIsProcessingFrame] = useState(false);
-  
+
   const localVideoRef = useRef();
   const remoteVideoRef = useRef();
   const canvasRef = useRef();
@@ -14,18 +25,11 @@ const VideoChat = () => {
   const wsRef = useRef();
   const frameCountRef = useRef(0);
   const animationFrameRef = useRef();
-
-  // Constants for optimization
-  const FRAME_SKIP = 2; // Process every 3rd frame
-  const VIDEO_CONSTRAINTS = {
-    width: { ideal: 640 },
-    height: { ideal: 480 },
-    frameRate: { ideal: 15 }
-  };
+  const streamRef = useRef(null); // always holds the *current* stream so cleanup never stops a stale/null reference
 
   // Initialize WebSocket connection
   useEffect(() => {
-    wsRef.current = new WebSocket(`ws://192.168.155.252:8000/ws/${localPeerId}`);
+    wsRef.current = new WebSocket(`${FASTAPI_WS_URL}/ws/${localPeerId}`);
     
     wsRef.current.onmessage = async (event) => {
       const message = JSON.parse(event.data);
@@ -51,6 +55,8 @@ const VideoChat = () => {
             setPrediction(message.prediction);
           }
           break;
+        default:
+          break;
       }
     };
 
@@ -58,6 +64,9 @@ const VideoChat = () => {
       if (wsRef.current) wsRef.current.close();
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
+    // Runs once on mount to open the WebSocket; handleOffer/handleAnswer/
+    // handleIceCandidate read the latest refs when invoked.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Optimized frame capture function
@@ -112,8 +121,9 @@ const VideoChat = () => {
           audio: true
         });
         
+        streamRef.current = stream;
         setLocalStream(stream);
-        
+
         if (localVideoRef.current) {
           localVideoRef.current.srcObject = stream;
         }
@@ -130,8 +140,9 @@ const VideoChat = () => {
     initLocalStream();
 
     return () => {
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
       }
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);

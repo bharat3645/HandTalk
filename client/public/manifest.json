@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "HandTalk",
+  "name": "HandTalk - ASL Detector",
   "icons": [
     {
       "src": "favicon.ico",

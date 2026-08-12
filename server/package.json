@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "handtalk-server",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -7,12 +7,26 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "asl",
+    "webrtc",
+    "socket.io",
+    "sign-language"
+  ],
+  "author": "bharat3645",
+  "license": "MIT",
+  "description": "WebRTC signaling server for HandTalk's real-time ASL video calls.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bharat3645/HandTalk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bharat3645/HandTalk/issues"
+  },
+  "homepage": "https://github.com/bharat3645/HandTalk#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "nodemon": "^3.1.9",
     "socket.io": "^4.8.1"

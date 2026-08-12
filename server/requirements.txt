@@ -1,0 +1,28 @@
+Flask
+flask-cors
+opencv-python
+numpy
+tensorflow
+
+# best_model.keras was saved with an earlier Keras 3 minor release. Newer
+# Keras 3.12+ (pulled in automatically by recent tensorflow releases) fails
+# to deserialize this specific Sequential-wraps-a-Functional-submodel
+# (MobileNetV2 base) architecture with:
+#   ValueError: Layer "batch_normalization" expects 1 input(s), but it
+#   received 2 input tensors.
+# Pinning keras==3.6.0 keeps the loader that correctly reconstructs it.
+# pip will print a "tensorflow requires keras>=3.12.0" resolver warning;
+# this is expected and safe to ignore -- it is functionally compatible and
+# verified to load the model and produce correct predictions.
+keras==3.6.0
+
+# mediapipe removed the legacy `mp.solutions.hands` Python API from its
+# Windows/py3.12 wheels; server.py/ser.py/main.py use the modern Tasks API
+# (mediapipe.tasks.python.vision.HandLandmarker) instead, which needs the
+# hand_landmarker.task model asset -- see "Download the hand-landmark model"
+# in the README.
+mediapipe
+fastapi
+uvicorn
+websockets
+gtts

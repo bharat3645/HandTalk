@@ -1,9 +1,0 @@
-Flask
-flask-cors
-opencv-python
-numpy
-tensorflow
-mediapipe
-fastapi
-uvicorn
-websockets

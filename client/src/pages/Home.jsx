@@ -1,23 +1,13 @@
 import React from 'react';
 import { Link } from "react-router-dom"
-import { Camera, Video, BrainCircuit, Users, BookOpen, Heart, Github, Twitter, Linkedin } from 'lucide-react'
+import { Camera, Video, BrainCircuit, Users, BookOpen, Heart, Github } from 'lucide-react'
 import "./home.css"
 import hero from "./hero.jpg"
+import Navbar from "./Navbar.jsx"
 const HomePage = () => {
   return (
     <div className="homepage">
-     <nav className="asl-navbar">
-  <div className="asl-container">
-    <Link to="/" className="asl-logo">HandTalk</Link>
-    <ul className="asl-nav-links">
-      <li><Link to="/">Home</Link></li>
-      <li><Link to="/self-testing">Self Testing</Link></li>
-      <li><Link to="/video-calling">Video Calling</Link></li>
-      <li><Link to="/learn">Learn ASL</Link></li>
-      <li><Link to="/explore">Explore Model</Link></li>
-    </ul>
-  </div>
-</nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="hero">
@@ -216,14 +206,8 @@ const HomePage = () => {
               <h3>🤟 HandTalk</h3>
               <p>Breaking communication barriers with technology</p>
               <div className="social-links">
-                <a href="https://github.com/HandTalk" target="_blank" rel="noopener noreferrer" aria-label="Github">
+                <a href="https://github.com/bharat3645/HandTalk" target="_blank" rel="noopener noreferrer" aria-label="Github">
                   <Github />
-                </a>
-                <a href="https://twitter.com/HandTalk" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-                  <Twitter />
-                </a>
-                <a href="https://linkedin.com/company/handtalk" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                  <Linkedin />
                 </a>
               </div>
             </div>
@@ -231,16 +215,16 @@ const HomePage = () => {
               <h4>Quick Links</h4>
               <ul>
                 <li>
-                  <Link to="/about">About Us</Link>
+                  <Link to="/self-testing">Self Testing</Link>
                 </li>
                 <li>
-                  <Link to="/features">Features</Link>
+                  <Link to="/video-calling">Video Calling</Link>
                 </li>
                 <li>
-                  <Link to="/pricing">Pricing</Link>
+                  <Link to="/learn">Learn ASL</Link>
                 </li>
                 <li>
-                  <Link to="/contact">Contact</Link>
+                  <Link to="/explore">Explore Model</Link>
                 </li>
               </ul>
             </div>
@@ -248,31 +232,16 @@ const HomePage = () => {
               <h4>Resources</h4>
               <ul>
                 <li>
-                  <Link to="/blog">Blog</Link>
+                  <a href="https://github.com/bharat3645/HandTalk#readme" target="_blank" rel="noopener noreferrer">Documentation</a>
                 </li>
                 <li>
-                  <Link to="/tutorials">Tutorials</Link>
+                  <a href="https://github.com/bharat3645/HandTalk/issues" target="_blank" rel="noopener noreferrer">Support / Issues</a>
                 </li>
-                <li>
-                  <Link to="/documentation">Documentation</Link>
-                </li>
-                <li>
-                  <Link to="/support">Support</Link>
-                </li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h4>Contact Us</h4>
-              <ul>
-                <li>📧 contact@handtalk.com</li>
-                <li>📞 +1 (555) 123-4567</li>
-                <li>📍 123 Innovation Drive, Tech Valley, CA 94043</li>
               </ul>
             </div>
           </div>
           <div className="footer-bottom">
             <p>&copy; {new Date().getFullYear()} HandTalk. All rights reserved.</p>
-            
           </div>
         </div>
       </footer>

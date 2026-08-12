@@ -1,19 +1,35 @@
-from fastapi import FastAPI, WebSocket
-from fastapi.middleware.cors import CORSMiddleware
+"""
+FastAPI/WebSocket backend for HandTalk's experimental `/temp` alt video-chat
+page.
+
+Exposes:
+    GET /health         - Service/model readiness (for humans and the
+                           Docker healthcheck).
+    WS  /ws/{client_id}  - Receives video frames over a WebSocket, runs hand
+                            detection + ASL prediction, and returns the
+                            annotated frame and prediction to the target
+                            peer.
+"""
+
+import os
+import time
 import json
-from typing import Dict
-import cv2
-import numpy as np
-import tensorflow as tf
-import mediapipe as mp
 import base64
+import binascii
 import logging
 import traceback
 from io import BytesIO
-from PIL import Image
+from typing import Dict
 from concurrent.futures import ThreadPoolExecutor
 
-# Setup logging
+import cv2
+import numpy as np
+from fastapi import FastAPI, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
+from PIL import Image, UnidentifiedImageError
+
+from asl_model import load_model, load_labels, create_hand_landmarker, detect_hands, predict_hand
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -30,28 +46,26 @@ app.add_middleware(
 )
 
 # Initialize ML components
+MODEL_PATH = os.getenv("MODEL_PATH", "./best_model.keras")
+LABELS_PATH = os.getenv("LABELS_PATH", "./labels.txt")
+HAND_MODEL_PATH = os.getenv("HAND_MODEL_PATH", "./hand_landmarker.task")
+PORT = int(os.getenv("PORT", "8000"))
+
+START_TIME = time.time()
+
 try:
-    logger.info("Loading model...")
-    model = tf.keras.models.load_model('./best_model.keras')
-    
+    import tensorflow as tf
+
+    model = load_model(MODEL_PATH)
+
     # Enable GPU memory growth to prevent OOM errors
     gpus = tf.config.experimental.list_physical_devices('GPU')
-    if gpus:
-        for gpu in gpus:
-            tf.config.experimental.set_memory_growth(gpu, True)
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
 
-    logger.info("Loading labels...")
-    with open("./labels.txt", "r") as file:
-        class_names = [line.strip() for line in file.readlines()]
-
-    logger.info("Initializing MediaPipe...")
-    mp_hands = mp.solutions.hands
-    hands = mp_hands.Hands(
-        static_image_mode=False,
-        max_num_hands=1,  # Reduce to 1 hand for better performance
-        min_detection_confidence=0.5,
-        min_tracking_confidence=0.5
-    )
+    class_names = load_labels(LABELS_PATH)
+    # Reduce to 1 hand for better performance
+    hand_landmarker = create_hand_landmarker(HAND_MODEL_PATH, num_hands=1)
 
 except Exception as e:
     logger.error(f"Error during initialization: {str(e)}")
@@ -60,64 +74,46 @@ except Exception as e:
 
 connections: Dict[str, WebSocket] = {}
 
-def preprocess_image(image_array):
-    """Preprocess the hand image for model prediction."""
-    # Reduce resolution for faster processing
-    image = cv2.resize(image_array, (160, 160))  # Reduced from 224x224
-    image = image.astype(np.float32) / 127.5 - 1
-    return np.expand_dims(image, axis=0)
 
 def process_frame(frame_data):
     """Process a frame with hand detection and ASL prediction."""
     try:
-        # Decode base64 frame
+        if not isinstance(frame_data, str) or ',' not in frame_data:
+            logger.warning("Rejected malformed frame payload (not a data URL)")
+            return None
+
         img_data = base64.b64decode(frame_data.split(',')[1])
         img_array = np.array(Image.open(BytesIO(img_data)))
-        
+
         # Reduce frame size for processing
         scale_factor = 0.5
         frame = cv2.resize(img_array, None, fx=scale_factor, fy=scale_factor)
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        
+
         # Process frame with MediaPipe
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = hands.process(rgb_frame)
+        hands_landmarks = detect_hands(hand_landmarker, rgb_frame)
 
         detected_class = ""
         detected_confidence = 0.0
 
-        if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                h, w, _ = frame.shape
-                x_coords = [int(landmark.x * w) for landmark in hand_landmarks.landmark]
-                y_coords = [int(landmark.y * h) for landmark in hand_landmarks.landmark]
+        for hand_landmarks in hands_landmarks:
+            result = predict_hand(model, class_names, frame, hand_landmarks,
+                                   padding=10, target_size=(160, 160))
+            if result is None:
+                continue
+            detected_class, detected_confidence, (x_min, y_min, x_max, y_max) = result
 
-                padding = 10  # Reduced padding
-                x_min = max(0, min(x_coords) - padding)
-                x_max = min(w, max(x_coords) + padding)
-                y_min = max(0, min(y_coords) - padding)
-                y_max = min(h, max(y_coords) + padding)
-
-                hand_region = frame[y_min:y_max, x_min:x_max]
-
-                if hand_region.size > 0:
-                    input_data = preprocess_image(hand_region)
-                    prediction = model.predict(input_data, verbose=0)
-                    index = np.argmax(prediction)
-
-                    detected_class = class_names[index]
-                    detected_confidence = float(prediction[0][index])
-
-                    # Simplified visualization
-                    cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0, 255, 0), 1)
-                    cv2.putText(frame, f"{detected_class}",
-                              (x_min, y_min - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+            # Simplified visualization
+            cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0, 255, 0), 1)
+            cv2.putText(frame, f"{detected_class}",
+                        (x_min, y_min - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
         # Compress frame with lower quality for faster transmission
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 70]
         _, buffer = cv2.imencode('.jpg', frame, encode_param)
         processed_frame = base64.b64encode(buffer).decode('utf-8')
-        
+
         return {
             'frame': f'data:image/jpeg;base64,{processed_frame}',
             'prediction': {
@@ -125,27 +121,55 @@ def process_frame(frame_data):
                 'confidence': detected_confidence
             }
         }
-    
+
+    except (binascii.Error, UnidentifiedImageError, ValueError) as e:
+        logger.warning(f"Rejected bad frame payload: {str(e)}")
+        return None
     except Exception as e:
         logger.error(f"Error processing frame: {str(e)}")
         logger.error(traceback.format_exc())
         return None
 
+
+@app.get("/health")
+def health():
+    """Report whether the model, labels, and hand-landmarker are ready, plus
+    how many WebSocket clients are currently connected."""
+    ready = model is not None and bool(class_names) and hand_landmarker is not None
+    body = {
+        "status": "ok" if ready else "degraded",
+        "model_loaded": model is not None,
+        "num_classes": len(class_names),
+        "hand_landmarker_ready": hand_landmarker is not None,
+        "active_connections": len(connections),
+        "uptime_seconds": round(time.time() - START_TIME, 1),
+    }
+    return body
+
+
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
     await websocket.accept()
     connections[client_id] = websocket
-    
+
     try:
         while True:
             data = await websocket.receive_text()
-            message = json.loads(data)
-            
-            if message["type"] == "video-frame":
+            try:
+                message = json.loads(data)
+            except json.JSONDecodeError:
+                logger.warning(f"Ignoring non-JSON message from {client_id}")
+                continue
+
+            if "target" not in message:
+                logger.warning(f"Ignoring message from {client_id} with no target")
+                continue
+
+            if message.get("type") == "video-frame":
                 # Process frame in thread pool
-                future = executor.submit(process_frame, message["frame"])
+                future = executor.submit(process_frame, message.get("frame"))
                 processed_data = future.result()
-                
+
                 if processed_data and message["target"] in connections:
                     response = {
                         "type": "processed-frame",
@@ -158,11 +182,16 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                 # Handle other message types directly
                 if message["target"] in connections:
                     await connections[message["target"]].send_text(data)
-    
+
     except Exception as e:
         logger.error(f"WebSocket error: {str(e)}")
         logger.error(traceback.format_exc())
-    
+
     finally:
         if client_id in connections:
             del connections[client_id]
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=PORT)

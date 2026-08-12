@@ -1,0 +1,82 @@
+# One-command local stack for HandTalk.
+#
+#   docker compose up --build
+#
+# Then open http://localhost:3000.
+#
+# Notes on the webcam:
+#   - The VideoCall page (server.py, port 5000) captures frames *in the
+#     browser* and POSTs them to /predict, so it works fully containerized
+#     with no camera access needed inside the container.
+#   - The SelfTesting page (ser.py, port 5001) instead streams video *from*
+#     the container's own webcam via /video_feed, which needs a physical
+#     camera device passed through to the container. That only works on
+#     Linux hosts (uncomment the `devices:` line below and point it at your
+#     camera, e.g. /dev/video0); Docker Desktop on Windows/macOS cannot pass
+#     through a webcam. Run `python server/ser.py` directly on the host
+#     instead if you're on Windows/macOS and want to use Self-Testing.
+#
+# Run the experimental /temp WebSocket backend too with:
+#   docker compose --profile experimental up --build
+
+services:
+  client:
+    build:
+      context: ./client
+      args:
+        REACT_APP_SIGNALING_SERVER_URL: http://localhost:3001
+        REACT_APP_PREDICTION_API_URL: http://localhost:5000
+        REACT_APP_SELFTEST_API_URL: http://localhost:5001
+    ports:
+      - "3000:80"
+    depends_on:
+      - signaling
+      - videocall-backend
+      - selftest-backend
+
+  signaling:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.node
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+
+  videocall-backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.python
+    command: ["python", "server.py"]
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      CAMERA_INDEX: "0"
+    # devices:
+    #   - /dev/video0:/dev/video0
+
+  selftest-backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.python
+    command: ["python", "ser.py"]
+    ports:
+      - "5001:5001"
+    environment:
+      PORT: 5001
+      CAMERA_INDEX: "0"
+    # devices:
+    #   - /dev/video0:/dev/video0
+
+  temp-backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.python
+    command: ["python", "main.py"]
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: 8000
+    profiles:
+      - experimental

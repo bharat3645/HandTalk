@@ -299,6 +299,14 @@
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.875rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Briefly highlights the remote prediction badge whenever a new ASL
+   prediction arrives from the other participant. */
+.prediction-badge.blink {
+  background: rgba(39, 174, 96, 0.9);
+  transform: scale(1.05);
 }
 
 /* Call Controls */
