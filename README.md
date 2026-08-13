@@ -130,6 +130,15 @@ HandTalk/
 └── LICENSE
 ```
 
+> **Note on repo size:** `server/best_model.keras` (~19 MB) and
+> `server/hand_landmarker.task` (~7.5 MB) are committed directly as regular
+> Git objects — this repo does not use Git LFS. That means `git clone` pulls
+> ~27 MB of binary model weights along with the source. This is intentional
+> for now (see [Getting Started](#getting-started) below for why cloning
+> already gives you a runnable model without a separate download step); a
+> future cleanup may migrate them to Git LFS, but that would rewrite history
+> and isn't done here to avoid breaking existing clones/forks.
+
 ## Getting Started
 
 ### Prerequisites
